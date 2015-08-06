@@ -1,21 +1,3 @@
-/*
- *  Delphes: a framework for fast simulation of a generic collider experiment
- *  Copyright (C) 2012-2014  Universite catholique de Louvain (UCL), Belgium
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #ifndef DelphesClasses_h
 #define DelphesClasses_h
 
@@ -24,6 +6,10 @@
  *  Definition of classes to be stored in the root tree.
  *  Function CompareXYZ sorts objects by the variable XYZ that MUST be
  *  present in the data members of the root tree class of the branch.
+ *
+ *  $Date: 2008-06-04 13:57:24 $
+ *  $Revision: 1.1 $
+ *
  *
  *  \author P. Demin - UCL, Louvain-la-Neuve
  *
@@ -79,17 +65,6 @@ public:
   Float_t AlphaQCD; // value of the QCD coupling used in the event | hepup.AQCDUP
 
   ClassDef(LHEFEvent, 2)
-};
-
-//---------------------------------------------------------------------------
-
-class LHEFWeight: public TObject
-{
-public:
-  Int_t ID; // weight ID
-  Float_t Weight; // weight value
-
-  ClassDef(LHEFWeight, 1)
 };
 
 //---------------------------------------------------------------------------
@@ -160,7 +135,7 @@ public:
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(GenParticle, 1)
 };
@@ -187,7 +162,7 @@ public:
   Float_t Eta; // mising energy pseudorapidity
   Float_t Phi; // mising energy azimuthal angle
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(MissingET, 1)
 };
@@ -200,6 +175,16 @@ public:
   Float_t HT; // scalar sum of transverse momenta
 
   ClassDef(ScalarHT, 1)
+};
+
+//---------------------------------------------------------------------------
+
+class SumET: public TObject
+{
+public:
+  Float_t ET; // scalar sum of transverse momenta
+
+  ClassDef(SumET, 1)
 };
 
 //---------------------------------------------------------------------------
@@ -241,19 +226,10 @@ public:
 
   TRefArray Particles; // references to generated particles
 
-  // Isolation variables
-
-  Float_t IsolationVar;
-  Float_t IsolationVarRhoCorr;
-  Float_t SumPtCharged;
-  Float_t SumPtNeutral;
-  Float_t SumPtChargedPU;
-  Float_t SumPt;
-
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(Photon, 2)
 };
@@ -276,19 +252,10 @@ public:
 
   TRef Particle; // reference to generated particle
 
-  // Isolation variables
-
-  Float_t IsolationVar;
-  Float_t IsolationVarRhoCorr;
-  Float_t SumPtCharged;
-  Float_t SumPtNeutral;
-  Float_t SumPtChargedPU;
-  Float_t SumPt;
-
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(Electron, 2)
 };
@@ -309,19 +276,10 @@ public:
 
   TRef Particle; // reference to generated particle
 
-   // Isolation variables
-
-  Float_t IsolationVar;
-  Float_t IsolationVarRhoCorr;
-  Float_t SumPtCharged;
-  Float_t SumPtNeutral;
-  Float_t SumPtChargedPU;
-  Float_t SumPt;
-
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(Muon, 2)
 };
@@ -343,37 +301,26 @@ public:
   Float_t DeltaEta;  // jet radius in pseudorapidity
   Float_t DeltaPhi;  // jet radius in azimuthal angle
 
-  UInt_t Flavor;
-  UInt_t FlavorAlgo;
-  UInt_t FlavorPhys;
-
   UInt_t BTag; // 0 or 1 for a jet that has been tagged as containing a heavy quark
-  UInt_t BTagAlgo;
-  UInt_t BTagPhys;
-
   UInt_t TauTag; // 0 or 1 for a jet that has been tagged as a tau
 
   Int_t Charge; // tau charge
 
   Float_t EhadOverEem; // ratio of the hadronic versus electromagnetic energy deposited in the calorimeter
 
-  Int_t NCharged; // number of charged constituents
-  Int_t NNeutrals; // number of neutral constituents
-  Float_t Beta; // (sum pt of charged pile-up constituents)/(sum pt of charged constituents)
-  Float_t BetaStar; // (sum pt of charged constituents coming from hard interaction)/(sum pt of charged constituents)
-  Float_t MeanSqDeltaR; // average distance (squared) between constituent and jet weighted by pt (squared) of constituent
-  Float_t PTD; // average pt between constituent and jet weighted by pt of constituent
-  Float_t FracPt[5]; // (sum pt of constituents within a ring 0.1*i < DeltaR < 0.1*(i+1))/(sum pt of constituents)
+  Int_t    NCharged; // number of charged constituents 
+  Int_t    NNeutrals; // number of neutral constituents 
+  Float_t  Beta; // (sum pt of charged pile-up constituents)/(sum pt of charged constituents) 
+  Float_t  BetaStar; // (sum pt of charged constituents coming from hard interaction)/(sum pt of charged constituents) 
+  Float_t  MeanSqDeltaR; // average distance (squared) between constituent and jet weighted by pt (squared) of constituent
+  Float_t  PTD; // average pt between constituent and jet weighted by pt of constituent
+  Float_t  FracPt[5]; // (sum pt of constituents within a ring 0.1*i < DeltaR < 0.1*(i+1))/(sum pt of constituents) 
 
-  Float_t Tau[5]; // N-subjettiness
-
-  TLorentzVector TrimmedP4[5]; // first entry (i = 0) is the total Trimmed Jet 4-momenta and from i = 1 to 4 are the trimmed subjets 4-momenta
-  TLorentzVector PrunedP4[5]; // first entry (i = 0) is the total Pruned Jet 4-momenta and from i = 1 to 4 are the pruned subjets 4-momenta
-  TLorentzVector SoftDroppedP4[5]; // first entry (i = 0) is the total SoftDropped Jet 4-momenta and from i = 1 to 4 are the pruned subjets 4-momenta
-
-  Int_t NSubJetsTrimmed; // number of subjets trimmed
-  Int_t NSubJetsPruned; // number of subjets pruned
-  Int_t NSubJetsSoftDropped; // number of subjets soft-dropped
+  Float_t Tau1; // 1-subjettiness
+  Float_t Tau2; // 2-subjettiness
+  Float_t Tau3; // 3-subjettiness
+  Float_t Tau4; // 4-subjettiness
+  Float_t Tau5; // 5-subjettiness
 
   TRefArray Constituents; // references to constituents
   TRefArray Particles; // references to generated particles
@@ -381,10 +328,9 @@ public:
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
-  TLorentzVector Area;
+  TLorentzVector P4();
 
-  ClassDef(Jet, 3)
+  ClassDef(Jet, 2)
 };
 
 //---------------------------------------------------------------------------
@@ -425,7 +371,7 @@ public:
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(Track, 2)
 };
@@ -441,8 +387,7 @@ public:
 
   Float_t E; // calorimeter tower energy
 
-  Float_t T; // ecal deposit time, averaged by sqrt(EM energy) over all particles, not smeared
-  Int_t NTimeHits; // number of hits contributing to time measurement
+  Float_t T; //particle arrival time of flight
 
   Float_t Eem; // calorimeter tower electromagnetic energy
   Float_t Ehad; // calorimeter tower hadronic energy
@@ -454,7 +399,7 @@ public:
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
 
-  TLorentzVector P4() const;
+  TLorentzVector P4();
 
   ClassDef(Tower, 1)
 };
@@ -502,20 +447,9 @@ public:
   Float_t Mass;
 
   Int_t IsPU;
-  Int_t IsRecoPU;
-
   Int_t IsConstituent;
 
-  Int_t IsFromConversion;
-
-  UInt_t Flavor;
-  UInt_t FlavorAlgo;
-  UInt_t FlavorPhys;
-
   UInt_t BTag;
-  UInt_t BTagAlgo;
-  UInt_t BTagPhys;
-
   UInt_t TauTag;
 
   Float_t Eem;
@@ -527,50 +461,25 @@ public:
 
   TLorentzVector Momentum, Position, Area;
 
-  Float_t Dxy;
-  Float_t SDxy;
-  Float_t Xd;
-  Float_t Yd;
-  Float_t Zd;
+  Float_t  Dxy;
+  Float_t  SDxy;
+  Float_t  Xd;
+  Float_t  Yd;
+  Float_t  Zd;
 
   // PileUpJetID variables
 
-  Int_t NCharged;
-  Int_t NNeutrals;
-  Float_t Beta;
-  Float_t BetaStar;
-  Float_t MeanSqDeltaR;
-  Float_t PTD;
-  Float_t FracPt[5];
-
-  // Timing information
-
-  Int_t NTimeHits;
-  std::vector< std::pair< Float_t, Float_t > > ECalEnergyTimePairs;
-
-  // Isolation variables
-
-  Float_t IsolationVar;
-  Float_t IsolationVarRhoCorr;
-  Float_t SumPtCharged;
-  Float_t SumPtNeutral;
-  Float_t SumPtChargedPU;
-  Float_t SumPt;
+  Int_t    NCharged;
+  Int_t    NNeutrals;
+  Float_t  Beta;
+  Float_t  BetaStar;
+  Float_t  MeanSqDeltaR;
+  Float_t  PTD;
+  Float_t  FracPt[5];
 
   // N-subjettiness variables
 
   Float_t Tau[5];
-
-  // Other Substructure variables
-
-  TLorentzVector TrimmedP4[5]; // first entry (i = 0) is the total Trimmed Jet 4-momenta and from i = 1 to 4 are the trimmed subjets 4-momenta
-  TLorentzVector PrunedP4[5]; // first entry (i = 0) is the total Pruned Jet 4-momenta and from i = 1 to 4 are the pruned subjets 4-momenta
-  TLorentzVector SoftDroppedP4[5]; // first entry (i = 0) is the total SoftDropped Jet 4-momenta and from i = 1 to 4 are the pruned subjets 4-momenta
-
-  Int_t NSubJetsTrimmed; // number of subjets trimmed
-  Int_t NSubJetsPruned; // number of subjets pruned
-  Int_t NSubJetsSoftDropped; // number of subjets soft-dropped
-
 
   static CompBase *fgCompare; //!
   const CompBase *GetCompare() const { return fgCompare; }
@@ -590,7 +499,7 @@ private:
 
   void SetFactory(DelphesFactory *factory) { fFactory = factory; }
 
-  ClassDef(Candidate, 3)
+  ClassDef(Candidate, 2)
 };
 
 #endif // DelphesClasses_h

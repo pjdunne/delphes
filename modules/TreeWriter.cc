@@ -1,25 +1,11 @@
-/*
- *  Delphes: a framework for fast simulation of a generic collider experiment
- *  Copyright (C) 2012-2014  Universite catholique de Louvain (UCL), Belgium
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 
 /** \class TreeWriter
  *
  *  Fills ROOT tree branches.
+ *
+ *  $Date: 2014-04-17 10:54:17 +0200 (Thu, 17 Apr 2014) $
+ *  $Revision: 1372 $
+ *
  *
  *  \author P. Demin - UCL, Louvain-la-Neuve
  *
@@ -78,6 +64,7 @@ void TreeWriter::Init()
   fClassMap[Jet::Class()] = &TreeWriter::ProcessJets;
   fClassMap[MissingET::Class()] = &TreeWriter::ProcessMissingET;
   fClassMap[ScalarHT::Class()] = &TreeWriter::ProcessScalarHT;
+  fClassMap[SumET::Class()] = &TreeWriter::ProcessSumET;
   fClassMap[Rho::Class()] = &TreeWriter::ProcessRho;
   fClassMap[Weight::Class()] = &TreeWriter::ProcessWeight;
   fClassMap[HectorHit::Class()] = &TreeWriter::ProcessHectorHit;
@@ -290,13 +277,13 @@ void TreeWriter::ProcessTracks(ExRootTreeBranch *branch, TObjArray *array)
     entry->YOuter = position.Y();
     entry->ZOuter = position.Z();
     entry->TOuter = position.T()*1.0E-3/c_light;
-
+    
     entry->Dxy = candidate->Dxy;
     entry->SDxy = candidate->SDxy ;
     entry->Xd = candidate->Xd;
     entry->Yd = candidate->Yd;
     entry->Zd = candidate->Zd;
-
+   
     const TLorentzVector &momentum = candidate->Momentum;
 
     pt = momentum.Pt();
@@ -361,7 +348,6 @@ void TreeWriter::ProcessTowers(ExRootTreeBranch *branch, TObjArray *array)
     entry->Edges[3] = candidate->Edges[3];
 
     entry->T = position.T()*1.0E-3/c_light;
-    entry->NTimeHits = candidate->NTimeHits;
 
     FillParticles(candidate, &entry->Particles);
   }
@@ -403,15 +389,6 @@ void TreeWriter::ProcessPhotons(ExRootTreeBranch *branch, TObjArray *array)
 
     entry->T = position.T()*1.0E-3/c_light;
 
-    // Isolation variables
-
-    entry->IsolationVar = candidate->IsolationVar;
-    entry->IsolationVarRhoCorr = candidate->IsolationVarRhoCorr ;
-    entry->SumPtCharged = candidate->SumPtCharged ;
-    entry->SumPtNeutral = candidate->SumPtNeutral ;
-    entry->SumPtChargedPU = candidate->SumPtChargedPU ;
-    entry->SumPt = candidate->SumPt ;
-
     entry->EhadOverEem = candidate->Eem > 0.0 ? candidate->Ehad/candidate->Eem : 999.9;
 
     FillParticles(candidate, &entry->Particles);
@@ -451,16 +428,6 @@ void TreeWriter::ProcessElectrons(ExRootTreeBranch *branch, TObjArray *array)
 
     entry->T = position.T()*1.0E-3/c_light;
 
-    // Isolation variables
-
-    entry->IsolationVar = candidate->IsolationVar;
-    entry->IsolationVarRhoCorr = candidate->IsolationVarRhoCorr ;
-    entry->SumPtCharged = candidate->SumPtCharged ;
-    entry->SumPtNeutral = candidate->SumPtNeutral ;
-    entry->SumPtChargedPU = candidate->SumPtChargedPU ;
-    entry->SumPt = candidate->SumPt ;
-
-
     entry->Charge = candidate->Charge;
 
     entry->EhadOverEem = 0.0;
@@ -489,6 +456,7 @@ void TreeWriter::ProcessMuons(ExRootTreeBranch *branch, TObjArray *array)
     const TLorentzVector &momentum = candidate->Momentum;
     const TLorentzVector &position = candidate->Position;
 
+
     pt = momentum.Pt();
     cosTheta = TMath::Abs(momentum.CosTheta());
     signPz = (momentum.Pz() >= 0.0) ? 1.0 : -1.0;
@@ -506,15 +474,6 @@ void TreeWriter::ProcessMuons(ExRootTreeBranch *branch, TObjArray *array)
 
     entry->T = position.T()*1.0E-3/c_light;
 
-    // Isolation variables
-
-    entry->IsolationVar = candidate->IsolationVar;
-    entry->IsolationVarRhoCorr = candidate->IsolationVarRhoCorr ;
-    entry->SumPtCharged = candidate->SumPtCharged ;
-    entry->SumPtNeutral = candidate->SumPtNeutral ;
-    entry->SumPtChargedPU = candidate->SumPtChargedPU ;
-    entry->SumPt = candidate->SumPt ;
-
     entry->Charge = candidate->Charge;
 
     entry->Particle = candidate->GetCandidates()->At(0);
@@ -531,7 +490,6 @@ void TreeWriter::ProcessJets(ExRootTreeBranch *branch, TObjArray *array)
   Double_t pt, signPz, cosTheta, eta, rapidity;
   Double_t ecalEnergy, hcalEnergy;
   const Double_t c_light = 2.99792458E8;
-  Int_t i;
 
   array->Sort();
 
@@ -560,20 +518,10 @@ void TreeWriter::ProcessJets(ExRootTreeBranch *branch, TObjArray *array)
 
     entry->Mass = momentum.M();
 
-    entry->Area = candidate->Area;
-
     entry->DeltaEta = candidate->DeltaEta;
     entry->DeltaPhi = candidate->DeltaPhi;
 
-    entry->Flavor = candidate->Flavor;
-    entry->FlavorAlgo = candidate->FlavorAlgo;
-    entry->FlavorPhys = candidate->FlavorPhys;
-
     entry->BTag = candidate->BTag;
-
-    entry->BTagAlgo = candidate->BTagAlgo;
-    entry->BTagPhys = candidate->BTagPhys;
-
     entry->TauTag = candidate->TauTag;
 
     entry->Charge = candidate->Charge;
@@ -599,22 +547,20 @@ void TreeWriter::ProcessJets(ExRootTreeBranch *branch, TObjArray *array)
     entry->BetaStar = candidate->BetaStar;
     entry->MeanSqDeltaR = candidate->MeanSqDeltaR;
     entry->PTD = candidate->PTD;
-
-    //--- Sub-structure variables ----
-
-    entry->NSubJetsTrimmed = candidate->NSubJetsTrimmed;
-    entry->NSubJetsPruned = candidate->NSubJetsPruned;
-    entry->NSubJetsSoftDropped = candidate->NSubJetsSoftDropped;
-
-    for(i = 0; i < 5; i++)
-    {
-      entry->FracPt[i] = candidate -> FracPt[i];
-      entry->Tau[i] = candidate -> Tau[i];
-      entry->TrimmedP4[i] = candidate -> TrimmedP4[i];
-      entry->PrunedP4[i] = candidate -> PrunedP4[i];
-      entry->SoftDroppedP4[i] = candidate -> SoftDroppedP4[i];
-    }
-
+    entry->FracPt[0] = candidate->FracPt[0];
+    entry->FracPt[1] = candidate->FracPt[1];
+    entry->FracPt[2] = candidate->FracPt[2];
+    entry->FracPt[3] = candidate->FracPt[3];
+    entry->FracPt[4] = candidate->FracPt[4];
+   
+    //--- N-subjettiness variables ----
+    
+    entry->Tau1 = candidate->Tau[0];
+    entry->Tau2 = candidate->Tau[1];
+    entry->Tau3 = candidate->Tau[2];
+    entry->Tau4 = candidate->Tau[3];
+    entry->Tau5 = candidate->Tau[4];
+   
     FillParticles(candidate, &entry->Particles);
   }
 }
@@ -654,6 +600,24 @@ void TreeWriter::ProcessScalarHT(ExRootTreeBranch *branch, TObjArray *array)
     entry = static_cast<ScalarHT*>(branch->NewEntry());
 
     entry->HT = momentum.Pt();
+  }
+}
+
+//------------------------------------------------------------------------------
+
+void TreeWriter::ProcessSumET(ExRootTreeBranch *branch, TObjArray *array)
+{
+  Candidate *candidate = 0;
+  SumET *entry = 0;
+
+  // get the first entry
+  if((candidate = static_cast<Candidate*>(array->At(0))))
+  {
+    const TLorentzVector &momentum = candidate->Momentum;
+
+    entry = static_cast<SumET*>(branch->NewEntry());
+
+    entry->ET = momentum.Pt();
   }
 }
 
